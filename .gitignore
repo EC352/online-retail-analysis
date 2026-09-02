@@ -1,0 +1,5 @@
+data/Online-Retail.csv
+.env
+__pycache__/
+/.vscode
+retail.duckdb

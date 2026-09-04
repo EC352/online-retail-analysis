@@ -59,22 +59,5 @@ UnitPrice: strong right skew (mean (2.86) > median (1.85), max of 649.5)
 Transactions/customer: right skew again (mean: 4.10, median: 2), max of 185 (customer 14911)
 Transactions/day: normal distribution (mean: 1.07, median: 1), max of 4 (at 26-05-2011)
 
-# Questions --> IN SQL
-1. Which products generate the most revenue? 
 
-2. Which countries generate the most revenue? 
-
-3. How has revenue changed over time? 
-
-4. What proportion of invoices are cancellations? 
-
-5. What are the largest transactions?  
-
-6. What are the most frequently purchased products?  
-
-7. How many transactions occur each month?  
-
-8. When do most transactions occur? 
-
-9. Are there specific products more popular at specific dates?
 

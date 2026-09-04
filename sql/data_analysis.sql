@@ -69,9 +69,5 @@ COUNT ("InvoiceNo") as 'number_of_invoices' FROM "invoices"
 WHERE "InvoiceNo" NOT LIKE 'A%' AND "InvoiceNo" NOT LIKE 'C%'
 GROUP BY YEAR ("InvoiceDate"), MONTH ("InvoiceDate");
 
---I changed the big table in smaller analytic tables, nothing is repeated in different tables to reduce insertion/updating errors
---customers: CustomerID : customers can be added without needing an invoice etc. 
---invoices: InvoiceNo | InvoiceDate | CustomerID | Country
---products: StockCode | Description | UnitPrice : can add products without needing invoices
---invoice_items: InvoiceNo | StockCode | Quantity 
+
  

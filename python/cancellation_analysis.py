@@ -48,9 +48,11 @@ plt.tight_layout()
 plt.show()
 
 #Cancellation rate per country
-cancellation_country = online_retail_clean.groupby(online_retail_clean["Country"], as_index = False).agg(cancelled = ("cancelled", sum), total_invoices = ("InvoiceNo", "nunique"))
+invoice_level = (online_retail_clean.groupby(["Country", "InvoiceNo"], as_index=False).agg(cancelled=("cancelled", "max")))
 
-cancellation_country["cancellation_rate"] = cancellation_country["cancelled"] / cancellation_country ["total_invoices"] * 100
+cancellation_country = (invoice_level.groupby("Country", as_index=False).agg(cancelled=("cancelled", "sum"), total_invoices=("InvoiceNo", "nunique")))
+
+cancellation_country["cancellation_rate"] = (cancellation_country["cancelled"] / cancellation_country["total_invoices"] * 100)
 
 print (f"Cancellation rate/country:\n {cancellation_country}")
 

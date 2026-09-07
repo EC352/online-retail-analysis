@@ -1,12 +1,8 @@
-SELECT COUNT(*) FROM "online_retail";
-DESC "online_retail";
-SELECT * FROM "online_retail" LIMIT 2;
-
 --I changed the big table in smaller analytic tables, nothing is repeated in different tables to reduce insertion/updating errors
 --customers: CustomerID : customers can be added without needing an invoice etc. 
 --invoices: InvoiceNo | InvoiceDate | CustomerID | Country
---products: StockCode | Description | UnitPrice : can add products without needing invoices
---invoice_items: InvoiceNo | StockCode | Quantity 
+--products: StockCode | Description : can add products without needing invoices
+--invoice_items: InvoiceNo | StockCode | Quantity | | UnitPrice
 
 DROP TABLE IF EXISTS "invoice_items";
 DROP TABLE IF EXISTS "invoices";

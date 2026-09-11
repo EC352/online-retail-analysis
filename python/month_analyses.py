@@ -11,7 +11,7 @@ online_retail_clean = online_retail_clean [ online_retail_clean ["Quantity"] > 0
 """Answers:
 Best and worst months 
 Monthly growth; Calculate monthly revenue and compare each month with the previous month. 
-Monthly customer activity; unique customers per month; Is revenue increasing because we're getting more customers, or because existing customers are spending more?"""
+Monthly customer activity; unique customers per month"""
 
 #Best and worst months
 online_retail_clean ["revenue"] = online_retail_clean["Quantity"] * online_retail_clean["UnitPrice"]

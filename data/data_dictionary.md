@@ -8,5 +8,4 @@
 | UnitPrice | Product price (Sterling) | VARCHAR | Strong right skew |
 | CustomerID | Unique customer identifyer | INT | |
 | Country | Country customer resides in | VARCHAR | |
-| CustomerID | Unique customer identifyer | INT | |
 

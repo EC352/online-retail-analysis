@@ -31,8 +31,11 @@ Are these products also the most frequently purchased products?
 Which countries generate the most revenue? 
 How has revenue changed over time? """
 
-#Which products generate the most revenue
+#What is the total revenue
 online_retail_clean["revenue"] = online_retail_clean["Quantity"] * online_retail_clean["UnitPrice"]
+print (f"Total revenue: {online_retail_clean["revenue"].sum()}")
+
+#Which products generate the most revenue
 revenue_product = online_retail_clean.groupby("StockCode").agg(revenue = ("revenue", "sum"), description = ("Description", "first")).sort_values("revenue", ascending=False)
 
 print (f"Highest revenue products:\n {revenue_product.head(10)}")
@@ -46,6 +49,17 @@ print (f"Most frequently purchased products:\n {purchases_product.head(10)}")
 revenue_country = online_retail_clean.groupby("Country")["revenue"].sum()
 
 print (f"Highest revenue countries:\n {revenue_country.nlargest(10)}")
+
+country_analysis = online_retail_clean.groupby("Country").agg(
+    Revenue = ("revenue", "sum"), 
+    UnitsSold = ("Quantity", "sum"), 
+    Transactions = ("InvoiceNo", "nunique")).sort_values("Revenue", ascending=False)
+
+print (country_analysis.head(10))
+
+top_5_countries = country_analysis.head(5)["Revenue"].sum()
+total_revenue = online_retail_clean["revenue"].sum()
+print (f"top 10 percentage of total: {top_5_countries / total_revenue * 100}%")
 
 #How does the revenue change per month
 revenue_month = online_retail_clean.groupby(online_retail_clean["InvoiceDate"].dt.to_period("M"), as_index = False)["revenue"].sum()

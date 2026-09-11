@@ -3,4 +3,4 @@ data/Online-Retail.csv
 __pycache__/
 /.vscode
 retail.duckdb
-ReadMe.md
+

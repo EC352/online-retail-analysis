@@ -27,16 +27,34 @@ revenue_cancelled = online_retail_clean.loc[online_retail_clean["cancelled"], "r
 print (f"Total revenue cancelled: {revenue_cancelled}")
 
 #Most often cancelled products
-products_cancelled = online_retail_clean.groupby("StockCode").agg(cancelled = ("cancelled", "sum"), description = ("Description", "first")).sort_values("cancelled", ascending=False)
+product_invoice = online_retail_clean.groupby(["StockCode", "InvoiceNo"], as_index=False).agg(cancelled = ("cancelled", "max"), description = ("Description", "first"), Invoicedate = ("InvoiceDate", "first"))
+products_cancelled = product_invoice.groupby("StockCode").agg(cancelled=("cancelled", "sum"), total_transactions=("InvoiceNo", "nunique"), description=("description", "first"))
 
-print (f"Most frequently cancelled products:\n {products_cancelled.head(10)}")
+products_cancelled["cancellation_rate"] = products_cancelled["cancelled"] / products_cancelled["total_transactions"] * 100
+products_cancelled["cancellation_share"] = products_cancelled["cancelled"] / products_cancelled["cancelled"].sum() * 100
+
+products_cancelled = products_cancelled.sort_values("cancelled", ascending=False)
+
+print (f"Most frequently cancelled products:\n {products_cancelled [["cancelled", "description", "total_transactions", "cancellation_rate", "cancellation_share"]].head(10)}")
+
+product_invoice["month"] = product_invoice["Invoicedate"].dt.to_period("M")
+
+monthly_product = product_invoice.groupby(["month", "StockCode"], as_index=False).agg(cancelled=("cancelled", "sum"), total_transactions=("InvoiceNo", "nunique"), description=("description", "first"))
+monthly_product["cancellation_rate"] = monthly_product["cancelled"] / monthly_product["total_transactions"] * 100
+
+high_cancellation_months = ["2010-09", "2010-12", "2011-01", "2011-11"]
+
+high_month_products = monthly_product[monthly_product["month"].astype(str).isin(high_cancellation_months)].sort_values(["month", "cancelled"], ascending=[True, False]).groupby("month").head(5)
+
+print(high_month_products)
 
 #Cancellation rate (%) per month
-cancellation_month = online_retail_clean.groupby(online_retail_clean["InvoiceDate"].dt.to_period("M"), as_index = False).agg(cancelled = ("cancelled", sum), total_invoices = ("InvoiceNo", "nunique"))
+month_invoice = online_retail_clean.groupby(["InvoiceNo", online_retail_clean["InvoiceDate"].dt.to_period("M")], as_index=False).agg(cancelled = ("cancelled", "max"))
+cancellation_month = month_invoice.groupby("InvoiceDate", as_index=False).agg(cancelled=("cancelled", "sum"), total_transactions=("InvoiceNo", "nunique"))
 
-cancellation_month["cancellation_rate"] = cancellation_month["cancelled"] / cancellation_month ["total_invoices"] * 100
+cancellation_month["cancellation_rate"] = cancellation_month["cancelled"] / cancellation_month ["total_transactions"] * 100
 
-print (f"Cancellation rate/month:\n {cancellation_month}")
+print (f"Cancellation rate/month:\n {cancellation_month.sort_values("cancelled", ascending=False)}")
 
 plt.plot (cancellation_month["InvoiceDate"].astype(str), cancellation_month["cancellation_rate"], color = "black", linewidth = 2.2, marker = "o", markersize = 4)
 plt.xlabel ("Month", fontsize = 12)
@@ -53,6 +71,9 @@ invoice_level = (online_retail_clean.groupby(["Country", "InvoiceNo"], as_index=
 cancellation_country = (invoice_level.groupby("Country", as_index=False).agg(cancelled=("cancelled", "sum"), total_invoices=("InvoiceNo", "nunique")))
 
 cancellation_country["cancellation_rate"] = (cancellation_country["cancelled"] / cancellation_country["total_invoices"] * 100)
+cancellation_country["cancellation_share"] = cancellation_country["cancelled"] / cancellation_country["cancelled"].sum() * 100
+
+cancellation_country = cancellation_country.sort_values("cancelled", ascending=False)
 
 print (f"Cancellation rate/country:\n {cancellation_country}")
 

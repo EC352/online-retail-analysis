@@ -23,6 +23,17 @@ online_retail_clean_quansorted = online_retail_clean.sort_values("Quantity", asc
 
 print (f"transactions with the most products:\n {online_retail_clean_quansorted.head(10)}")
 
+product_analysis = online_retail_clean.groupby("Description").agg(
+    Revenue = ("revenue", "sum"), 
+    UnitsSold = ("Quantity", "sum"), 
+    Transactions = ("InvoiceNo", "nunique")).sort_values("Revenue", ascending=False)
+
+print (product_analysis.head(10))
+
+top_10_revenue = product_analysis.head(10)["Revenue"].sum()
+total_revenue = online_retail_clean["revenue"].sum()
+print (f"top 10 percentage of total: {top_10_revenue / total_revenue * 100}%")
+
 #What days do most transactions occur?
 transactions_day= online_retail_clean.groupby(online_retail_clean["InvoiceDate"].dt.to_period("D"))["InvoiceNo"].nunique()
 

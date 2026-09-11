@@ -36,6 +36,57 @@ plt.xticks(rotation=90)
 plt.tight_layout()
 plt.show()
 
+#I found that there is an increase of 683% between Oct 2010 & Dec 2010
+october = online_retail_clean[(online_retail_clean["InvoiceDate"].dt.year == 2010) & 
+                              (online_retail_clean["InvoiceDate"].dt.month == 10)]
+december = online_retail_clean[(online_retail_clean["InvoiceDate"].dt.year == 2010) & 
+                              (online_retail_clean["InvoiceDate"].dt.month == 12)]
+
+october_orders = october.groupby("InvoiceNo")["revenue"].sum().sort_values(ascending=False)
+december_orders = december.groupby("InvoiceNo")["revenue"].sum().sort_values(ascending=False)
+
+print (f"Highest revenue orders in october:\n {october_orders.head(10)}")
+print (f"Highest revenue orders in december:\n {december_orders.head(10)}")
+
+largest_order_oct = october_orders.iloc[0]
+largest_order_oct_share = (largest_order_oct / october["revenue"].sum()) * 100
+
+largest_order_dec = december_orders.iloc[0]
+largest_order_dec_share = (largest_order_dec / december["revenue"].sum()) * 100
+
+print (f"October largest order share: {largest_order_oct_share}%\n vs December: {largest_order_dec_share}%")
+
+print (f"October:\n Orders: {len(october_orders)}\n Revenue: {october_orders.sum()}\n Average_order: {october_orders.mean()}\n Median_order: {october_orders.median()}")
+print (f"December:\n Orders: {len(december_orders)}\n Revenue: {december_orders.sum()}\n Average_order: {december_orders.mean()}\n Median_order: {december_orders.median()}")
+
+#Examining the september 2011 peak:
+august = online_retail_clean[(online_retail_clean["InvoiceDate"].dt.year == 2011) & 
+                              (online_retail_clean["InvoiceDate"].dt.month == 8)]
+september = online_retail_clean[(online_retail_clean["InvoiceDate"].dt.year == 2011) & 
+                              (online_retail_clean["InvoiceDate"].dt.month == 9)]
+
+august_orders = august.groupby("InvoiceNo")["revenue"].sum().sort_values(ascending=False)
+september_orders = september.groupby("InvoiceNo")["revenue"].sum().sort_values(ascending=False)
+
+print (f"Highest revenue orders in august 2011:\n {august_orders.head(10)}")
+print (f"Highest revenue orders in september 2011:\n {september_orders.head(10)}")
+
+largest_order_aug = august_orders.iloc[0]
+largest_order_aug_share = (largest_order_aug / august["revenue"].sum()) * 100
+
+largest_order_sep = september_orders.iloc[0]
+largest_order_sep_share = (largest_order_sep / september["revenue"].sum()) * 100
+
+print (f"August largest order share: {largest_order_aug_share}%\n vs September: {largest_order_sep_share}%")
+
+print (f"August:\n Orders: {len(august_orders)}\n Revenue: {august_orders.sum()}\n Average_order: {august_orders.mean()}\n Median_order: {august_orders.median()}")
+print (f"September:\n Orders: {len(september_orders)}\n Revenue: {september_orders.sum()}\n Average_order: {september_orders.mean()}\n Median_order: {september_orders.median()}")
+
+largest_sep_invoice = september_orders.index[0]
+large_order_sep = september[september["InvoiceNo"] == largest_sep_invoice]
+
+print (large_order_sep[["InvoiceNo", "StockCode", "Description", "Quantity", "UnitPrice", "Country", "revenue"]])
+
 #Monthly new customers
 first_purchase = online_retail_clean.groupby("CustomerID")["InvoiceDate"].min().dt.to_period("M") #Find the first purchase date for each customer
 new_customers_per_month = first_purchase.value_counts().sort_index().reset_index() 
@@ -52,3 +103,29 @@ plt.grid(axis="y", linestyle="--", linewidth=0.7, alpha=0.4)
 plt.xticks(rotation=90)
 plt.tight_layout()
 plt.show()
+
+october["FirstPurchaseMonth"] = october["CustomerID"].map(first_purchase)
+october["CustomerType"] = october["InvoiceDate"].dt.to_period("M") == october["FirstPurchaseMonth"]
+
+oct_orders = october["InvoiceNo"].nunique()
+oct_revenue = october["revenue"].sum()
+october_new_orders = october[october["CustomerType"] == True]["InvoiceNo"].nunique()
+october_new_revenue = october[october["CustomerType"] == True]["revenue"].sum()
+
+print (f"October new orders share: {october_new_orders / oct_orders * 100}")
+print (f"October new revenue share: {october_new_revenue / oct_revenue * 100}")
+
+december["FirstPurchaseMonth"] = december["CustomerID"].map(first_purchase)
+december["CustomerType"] = december["InvoiceDate"].dt.to_period("M") == december["FirstPurchaseMonth"]
+
+dec_orders = december["InvoiceNo"].nunique()
+dec_revenue = december["revenue"].sum()
+december_new_orders = december[december["CustomerType"] == True]["InvoiceNo"].nunique()
+december_new_revenue = december[december["CustomerType"] == True]["revenue"].sum()
+
+print (f"December new orders share: {december_new_orders / dec_orders * 100}")
+print (f"December new revenue share: {december_new_revenue / dec_revenue * 100}")
+
+
+
+
